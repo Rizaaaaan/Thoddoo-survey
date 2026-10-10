@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2e3621">
+<script>
+// Paste your Supabase details here (Supabase > Project Settings > API, or Connect button).
+// Both values are meant to be public. The database only lets this page ADD answers.
+window.SURVEY_CONFIG = {
+  supabaseUrl: "https://obhdznxnnshxytxvmwaq.supabase.co",   // e.g. "https://abcd1234.supabase.co"
+  supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iaGR6bnhubnNoeHl0eHZtd2FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2NDE5NTYsImV4cCI6MjEwNzIxNzk1Nn0.hFEEOy15TlvgzlA0nGJzpAEr7XeEy77FYPTNe4fsljM",   // the "anon public" key (starts with eyJ...) or "publishable" key (starts with sb_publishable_...)
+};
+</script>
+</head>
+<body>
+<title>Thoddoo Visitor Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap">
+<style>
+/* Layout: one question per card on Belena's warm sand field, olive ink, B-monogram seal in the header.
+   Brand: sand #E2D3B9 (from Belena), deep olive #2E3621 (belenamaldives.com theme colour), logo ivory #EEEAE4. */
+:root {
+  --bg: #e2d3b9;
+  --surface: #f7f3ec;
+  --ink: #2e3621;
+  --muted: #6c6a57;
+  --line: #d9cbb0;
+  --accent: #2e3621;
+  --accent-soft: #ece2cf;
+  --accent-2: #8c7a55;
+  --cta: #2e3621;
+  --on-accent: #f7f3ec;
+  --on-cta: #f7f3ec;
+  --danger: #9a3b22;
+  --font-display: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
+  --font-body: "Jost", "Futura", "Segoe UI", system-ui, sans-serif;
+  --radius: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b2016; --surface: #252b1e; --ink: #eee6d6; --muted: #b3aa93; --line: #3a412f;
+    --accent: #e2d3b9; --accent-soft: #343b2a; --accent-2: #b9a57c; --cta: #e2d3b9; --on-accent: #2e3621; --on-cta: #2e3621; --danger: #e59677;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b2016; --surface: #252b1e; --ink: #eee6d6; --muted: #b3aa93; --line: #3a412f;
+  --accent: #e2d3b9; --accent-soft: #343b2a; --accent-2: #b9a57c; --cta: #e2d3b9; --on-accent: #2e3621; --on-cta: #2e3621; --danger: #e59677;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.5;
+  padding-inline: 16px;
+}
+.wrap { max-width: 640px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; padding-block: 18px 28px; gap: 18px; }
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lang { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 3px; padding: 3px; }
+.lang button { font: inherit; font-size: .82rem; font-weight: 600; border: 0; background: transparent; color: var(--muted); padding: 6px 11px; border-radius: 2px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.section-tag:empty { display: none; }
+.chip { align-self: flex-start; padding: 8px 16px; }
+.chip[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); }
+.brand { font-family: var(--font-body); font-weight: 500; font-size: .8rem; text-transform: uppercase; letter-spacing: .28em; display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--ink); box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 4px var(--ink); }
+.section-tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
+.progress { height: 3px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.progress > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 99px; transition: width .35s ease; }
+main { flex: 1; display: flex; flex-direction: column; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 22px; display: flex; flex-direction: column; gap: 18px; animation: rise .32s ease both; }
+@keyframes rise { from { transform: translateY(10px); opacity: .4; } to { transform: none; opacity: 1; } }
+h1, h2 { font-family: var(--font-display); font-weight: 600; margin: 0; text-wrap: balance; line-height: 1.1; letter-spacing: -.005em; }
+h1 { font-size: clamp(2.2rem, 8vw, 3.1rem); }
+h2 { font-size: clamp(1.6rem, 5.6vw, 2.05rem); }
+.qnum { font-family: var(--font-display); font-style: italic; color: var(--accent-2); font-weight: 500; font-size: 1.1rem; }
+.hint { color: var(--muted); font-size: .95rem; margin: -8px 0 0; }
+p { margin: 0; }
+.opts { display: grid; gap: 10px; }
+.opts.two { grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); }
+.opt {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 13px 15px; border: 1.5px solid var(--line); border-radius: 3px; background: transparent; color: var(--ink);
+  font: inherit; font-size: 1rem; cursor: pointer; transition: border-color .15s, background .15s, transform .1s;
+}
+.opt:hover { border-color: var(--accent); }
+.opt:active { transform: scale(.99); }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.opt .key { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font-size: .78rem; font-weight: 600; color: var(--muted); }
+.opt[aria-pressed="true"] .key { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.scale-list { display: grid; gap: 16px; }
+.scale-row { display: grid; gap: 8px; padding-bottom: 14px; border-bottom: 1px dashed var(--line); }
+.scale-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.scale-label { font-weight: 600; }
+.pips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.pip { padding: 9px 0; border: 1.5px solid var(--line); border-radius: 3px; background: transparent; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.pip:hover { border-color: var(--accent); }
+.pip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.anchors { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); gap: 8px; }
+input[type="text"], textarea {
+  width: 100%; font: inherit; color: var(--ink); background: transparent;
+  border: 1.5px solid var(--line); border-radius: 3px; padding: 13px 15px;
+}
+textarea { min-height: 120px; resize: vertical; }
+input:focus, textarea:focus, button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; border-color: var(--accent); }
+.nav { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.btn { font: inherit; font-weight: 600; border-radius: 2px; padding: 12px 24px; cursor: pointer; border: 1.5px solid transparent; }
+.btn-primary { background: var(--cta); color: var(--on-cta); letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; font-weight: 500; }
+.btn-primary:disabled { opacity: .45; cursor: not-allowed; }
+.btn-ghost { background: transparent; color: var(--muted); border-color: var(--line); letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; font-weight: 500; }
+.enter-hint { font-size: .8rem; color: var(--muted); }
+.error { color: var(--danger); font-size: .92rem; font-weight: 600; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: .92rem; }
+.meta-row span::before { content: "•"; margin-right: 8px; color: var(--accent-2); }
+.meta-row span:first-child::before { content: none; }
+.notice { font-size: .82rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+.preview-flag { font-size: .75rem; font-weight: 600; color: var(--cta); border: 1px solid var(--cta); border-radius: 99px; padding: 2px 10px; }
+.done-mark { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-soft); display: grid; place-items: center; }
+.done-mark svg { width: 34px; height: 34px; stroke: var(--accent); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.pips.with-na { grid-template-columns: repeat(5, 1fr) auto; }
+.pip.na { padding-inline: 10px; font-size: .78rem; font-weight: 600; }
+.pips.seven { grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.pip.dot { display: grid; place-items: center; padding: 10px 0; }
+.pip.dot i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--muted); }
+.pip.dot:nth-child(1) i, .pip.dot:nth-child(7) i { width: 18px; height: 18px; }
+.pip.dot:nth-child(2) i, .pip.dot:nth-child(6) i { width: 15px; height: 15px; }
+.pip.dot[aria-pressed="true"] i { border-color: var(--on-accent); background: var(--on-accent); }
+.poles { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; }
+.opt.rank[aria-pressed="true"] .key { background: var(--cta); border-color: var(--cta); color: var(--on-cta); }
+.card.transition { background: linear-gradient(160deg, var(--accent-soft), var(--surface) 70%); padding-block: 40px 26px; }
+@media (prefers-reduced-motion: reduce) { .card { animation: none; } .progress > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span id="brandName">Thoddoo Visitor Study</span></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" lang="en">English</button>
+      <button type="button" data-lang="ru" lang="ru">Русский</button>
+      <button type="button" data-lang="cs" lang="cs">Čeština</button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  <span id="sectionTag" class="section-tag"></span>
+  <main id="app" aria-live="polite"></main>
+</div>
+
+<script>
+/* ===== Settings: fill these in once the Supabase project exists ===== */
+// On the live site these come from config.js. Leave both empty for preview mode (nothing is saved).
+const CONFIG = window.SURVEY_CONFIG || {};
+const SUPABASE_URL = (CONFIG.supabaseUrl || "").trim().replace(/\/+$/, "").replace(/\/rest\/v1$/, "");   // e.g. https://abcd1234.supabase.co
+const SUPABASE_ANON_KEY = CONFIG.supabaseKey || "";                   // anon or publishable key (safe for public pages)
+const SURVEY_VERSION = "visitor-v2";
+
+/* ===== Translations =====
+   Keys are the English text. Answers are always stored in English so all languages analyse together.
+   Russian and Czech are first drafts: have a native speaker check them (and back-translate) before launch. */
+const TR = {
+ru: {
+"Before we start":"Перед началом","Your trip":"Ваша поездка","Why Thoddoo":"Почему Тодду","The destination":"Об острове","Your motivations":"Ваши мотивы","Choosing where to stay":"Выбор жилья","Planning your trip":"Планирование поездки","About you":"О вас","Almost done":"Почти готово",
+"Are you 18 or older, and happy to take part?":"Вам 18 лет или больше, и вы согласны принять участие?","Yes, let's go":"Да, начнём","No":"Нет","Yes":"Да",
+"Have you visited Thoddoo, or are you there now?":"Вы бывали на Тодду или находитесь там сейчас?","I'm visiting now":"Я сейчас здесь","Visited in the last 12 months":"Был(а) за последние 12 месяцев","Visited more than 12 months ago":"Был(а) больше 12 месяцев назад","Never visited":"Никогда не был(а)",
+"Is this your first visit to the Maldives?":"Это ваш первый визит на Мальдивы?","Is this your first visit to Thoddoo?":"Это ваш первый визит на Тодду?","No, I've been before":"Нет, я уже бывал(а) здесь",
+"How many nights are you staying on Thoddoo?":"Сколько ночей вы проводите на Тодду?","8 or more":"8 и больше",
+"Did you combine Thoddoo with other places on this trip?":"Совмещаете ли вы Тодду с другими местами в этой поездке?","Thoddoo only":"Только Тодду","Other local islands":"Другие местные острова","A resort":"Курортный отель (резорт)","Both":"И то, и другое",
+"Who are you travelling with?":"С кем вы путешествуете?","Alone":"Один/одна","Partner/spouse":"С партнёром/супругом(ой)","Friends":"С друзьями","Family with children":"С семьёй, с детьми","Family without children":"С семьёй, без детей","Organised group":"С организованной группой",
+"Where are you staying on Thoddoo?":"Где вы живёте на Тодду?","Guesthouse":"Гестхаус","Hotel/boutique hotel":"Отель/бутик-отель","Private rental/Airbnb":"Частная аренда/Airbnb","Other":"Другое",
+"How did you book your accommodation?":"Как вы бронировали жильё?","Directly with the property":"Напрямую у отеля","Travel agent/tour operator":"Через турагентство/туроператора",
+"How far in advance did you book?":"За сколько времени вы забронировали?","Less than 1 week":"Меньше чем за 1 неделю","1–4 weeks":"За 1–4 недели","1–3 months":"За 1–3 месяца","More than 3 months":"Больше чем за 3 месяца",
+"What were the main reasons you chose Thoddoo?":"Каковы главные причины, по которым вы выбрали Тодду?","Pick up to 3.":"Выберите до 3.","More affordable than a resort":"Дешевле, чем резорт","Beaches and bikini beach":"Пляжи и бикини-пляж","Snorkelling, diving and marine life":"Снорклинг, дайвинг и морская жизнь","Excursions (sandbank, dolphins, mantas, whale sharks, fishing)":"Экскурсии (песчаная коса, дельфины, манты, китовые акулы, рыбалка)","Quiet, relaxed, uncrowded island":"Тихий, спокойный, немноголюдный остров","Authentic local island life and culture":"Настоящая местная жизнь и культура","Farms and local produce":"Фермы и местные продукты","Easy access from Malé":"Легко добраться из Мале","Recommended by friends/family":"Посоветовали друзья/семья","Saw it on social media/YouTube":"Увидел(а) в соцсетях/на YouTube","Good reviews online":"Хорошие отзывы в интернете",
+"Before choosing Thoddoo, did you consider other local islands?":"Прежде чем выбрать Тодду, вы рассматривали другие местные острова?","Which islands did you consider?":"Какие острова вы рассматривали?","Optional.":"Необязательно.",
+"How important was each of these when you chose Thoddoo?":"Насколько важным было каждое из этого при выборе Тодду?","Natural beauty (beaches, water, greenery)":"Природная красота (пляжи, вода, зелень)","Marine activities and excursions":"Морские развлечения и экскурсии","Value for money":"Соотношение цены и качества","Peace and quiet":"Тишина и покой","Local culture and friendly people":"Местная культура и дружелюбные люди","Safety":"Безопасность","Food and cafés":"Еда и кафе","Ease of getting there":"Удобство дороги","Uncrowded, “undiscovered” feel":"Ощущение немноголюдного, «неоткрытого» места",
+"Not at all important":"Совсем не важно","Extremely important":"Очень важно","Strongly disagree":"Полностью не согласен(на)","Strongly agree":"Полностью согласен(на)",
+"Which words best describe how Thoddoo feels to you?":"Какие слова лучше всего описывают ваши ощущения от Тодду?","Relaxing":"Расслабляющий","Exciting":"Захватывающий","Authentic":"Настоящий","Romantic":"Романтичный","Peaceful":"Мирный","Adventurous":"Приключенческий","Friendly":"Дружелюбный","Budget-friendly":"Бюджетный","Unspoilt":"Нетронутый",
+"On this trip, I wanted to…":"В этой поездке я хотел(а)…","…relax and escape daily routine":"…отдохнуть и сбежать от рутины","…experience nature and the ocean":"…побыть на природе и у океана","…have adventure and try new activities":"…получить приключения и попробовать что-то новое","…experience local Maldivian life":"…увидеть местную мальдивскую жизнь","…see the Maldives on a budget":"…увидеть Мальдивы недорого","…spend quality time with partner/family/friends":"…провести время с партнёром/семьёй/друзьями","…take great photos and content to share":"…сделать красивые фото и контент для соцсетей",
+"How important were these when you chose your accommodation?":"Насколько важным было это при выборе жилья?","Price per night":"Цена за ночь","Online review score/ratings":"Рейтинг и отзывы в интернете","Location (close to beach)":"Расположение (близко к пляжу)","Room quality and cleanliness":"Качество и чистота номера","Photos and look of the property":"Фото и внешний вид отеля","On-site restaurant and food":"Ресторан и еда на месте","Local Maldivian food and farm-fresh produce":"Местная мальдивская кухня и свежие фермерские продукты","Friendly, helpful hosts/staff":"Дружелюбные и отзывчивые хозяева/персонал","Excursions arranged by the property":"Экскурсии, организованные отелем","Airport/speedboat transfer arranged":"Организованный трансфер из аэропорта/на скоростном катере","Local experience offered by the property":"Местные впечатления, которые предлагает отель","Flexible cancellation":"Гибкие условия отмены","Wi-Fi and amenities (AC, hot water)":"Wi-Fi и удобства (кондиционер, горячая вода)",
+"Which ONE factor mattered most in your final choice?":"Какой ОДИН фактор был самым важным в вашем окончательном выборе?","How many properties did you seriously compare before booking?":"Сколько вариантов жилья вы всерьёз сравнивали перед бронированием?","More than 5":"Больше 5",
+"What was your nightly room budget on Thoddoo (USD)?":"Каков был ваш бюджет на номер за ночь на Тодду (USD)?","Under $50":"Меньше $50",
+"Where did you find information when planning this trip?":"Где вы искали информацию при планировании поездки?","Pick all that apply.":"Выберите всё подходящее.","Google search/Maps":"Поиск Google/Карты","Facebook/travel groups":"Facebook/группы путешественников","Travel blogs":"Тревел-блоги","Friends/family":"Друзья/семья","Travel agent":"Турагент","Property's own website":"Сайт самого отеля",
+"Which ONE source most influenced your choice of accommodation?":"Какой ОДИН источник больше всего повлиял на выбор жилья?","In a few words, what would make you choose one guesthouse on Thoddoo over another?":"В двух словах: что заставило бы вас выбрать один гестхаус на Тодду, а не другой?","What could a guesthouse on Thoddoo offer to make your stay more memorable?":"Что гестхаус на Тодду мог бы предложить, чтобы ваш отдых стал более запоминающимся?",
+"Your age":"Ваш возраст","Your gender":"Ваш пол","Female":"Женский","Male":"Мужской","Prefer to self-describe":"Опишу сам(а)","Prefer not to say":"Предпочитаю не отвечать","Which country do you live in?":"В какой стране вы живёте?","Are you staying, or did you stay, at Belena Maldives?":"Вы живёте или жили в Belena Maldives?",
+"Question {n} of {m}":"Вопрос {n} из {m}","{n} of {m} picked":"Выбрано {n} из {m}","Back":"Назад","Next":"Далее","Review and send":"К отправке","Press Enter ↵":"Нажмите Enter ↵","Type your answer":"Введите ответ",
+"Preview: answers are not saved":"Демо: ответы не сохраняются","Why Thoddoo? Tell us about your stay.":"Почему Тодду? Расскажите о своём отдыхе.",
+"I'm a Bachelor of Marketing student at The Maldives National University, working on a research project with a guesthouse on Thoddoo. This survey asks why you chose Thoddoo and how you chose where to stay.":"Я учусь на бакалавриате по маркетингу в Национальном университете Мальдив и провожу исследование вместе с гестхаусом на Тодду. В этом опросе мы спрашиваем, почему вы выбрали Тодду и как вы выбирали жильё.",
+"About 7 minutes":"Около 7 минут","Anonymous":"Анонимно","Stop any time":"Можно прервать в любой момент","Start over":"Начать заново","Continue where I left off":"Продолжить с того же места","Start the survey":"Начать опрос",
+"Your answers are used only for this academic project and contain no names or contact details.":"Ваши ответы используются только для этого учебного проекта и не содержат имён или контактных данных.",
+"Thank you for your time":"Спасибо за ваше время","This survey is for visitors aged 18+ who have been to Thoddoo, so there are no more questions for you.":"Этот опрос для гостей от 18 лет, которые бывали на Тодду, поэтому больше вопросов для вас нет.",
+"That's everything. Ready to send?":"Это всё. Отправить ответы?","You can go back and change any answer before sending.":"Перед отправкой можно вернуться и изменить любой ответ.","Send my answers":"Отправить ответы","Sending…":"Отправка…",
+"Your answers didn't send. Check your internet connection and press Send again. Nothing you entered has been lost.":"Ответы не отправились. Проверьте подключение к интернету и нажмите «Отправить» ещё раз. Всё, что вы ввели, сохранено.",
+"Thank you! Your answers are in.":"Спасибо! Ваши ответы получены.","They'll help a small Maldivian business understand its visitors better. Enjoy the rest of your time on Thoddoo.":"Они помогут небольшому мальдивскому бизнесу лучше понять своих гостей. Хорошего отдыха на Тодду!"
+},
+cs: {
+"Before we start":"Než začneme","Your trip":"Vaše cesta","Why Thoddoo":"Proč Thoddoo","The destination":"O ostrově","Your motivations":"Vaše motivace","Choosing where to stay":"Výběr ubytování","Planning your trip":"Plánování cesty","About you":"O vás","Almost done":"Skoro hotovo",
+"Are you 18 or older, and happy to take part?":"Je vám 18 let nebo více a souhlasíte s účastí?","Yes, let's go":"Ano, začněme","No":"Ne","Yes":"Ano",
+"Have you visited Thoddoo, or are you there now?":"Navštívili jste Thoddoo, nebo jste tam právě teď?","I'm visiting now":"Jsem tu právě teď","Visited in the last 12 months":"Byl(a) jsem tu v posledních 12 měsících","Visited more than 12 months ago":"Byl(a) jsem tu před více než 12 měsíci","Never visited":"Nikdy jsem tu nebyl(a)",
+"Is this your first visit to the Maldives?":"Je to vaše první návštěva Malediv?","Is this your first visit to Thoddoo?":"Je to vaše první návštěva Thoddoo?","No, I've been before":"Ne, už jsem tu byl(a)",
+"How many nights are you staying on Thoddoo?":"Kolik nocí na Thoddoo strávíte?","8 or more":"8 a více",
+"Did you combine Thoddoo with other places on this trip?":"Spojili jste Thoddoo s jinými místy během této cesty?","Thoddoo only":"Jen Thoddoo","Other local islands":"Jiné místní ostrovy","A resort":"Resort","Both":"Obojí",
+"Who are you travelling with?":"S kým cestujete?","Alone":"Sám/sama","Partner/spouse":"S partnerem/manželem(kou)","Friends":"S přáteli","Family with children":"S rodinou s dětmi","Family without children":"S rodinou bez dětí","Organised group":"S organizovanou skupinou",
+"Where are you staying on Thoddoo?":"Kde na Thoddoo bydlíte?","Guesthouse":"Penzion (guesthouse)","Hotel/boutique hotel":"Hotel/butikový hotel","Private rental/Airbnb":"Soukromý pronájem/Airbnb","Other":"Jiné",
+"How did you book your accommodation?":"Jak jste rezervovali ubytování?","Directly with the property":"Přímo u ubytování","Travel agent/tour operator":"Přes cestovní kancelář/agenturu",
+"How far in advance did you book?":"Jak dlouho předem jste rezervovali?","Less than 1 week":"Méně než týden předem","1–4 weeks":"1–4 týdny","1–3 months":"1–3 měsíce","More than 3 months":"Více než 3 měsíce",
+"What were the main reasons you chose Thoddoo?":"Jaké byly hlavní důvody, proč jste si vybrali Thoddoo?","Pick up to 3.":"Vyberte nejvýše 3.","More affordable than a resort":"Levnější než resort","Beaches and bikini beach":"Pláže a bikini pláž","Snorkelling, diving and marine life":"Šnorchlování, potápění a mořský život","Excursions (sandbank, dolphins, mantas, whale sharks, fishing)":"Výlety (písečný ostrůvek, delfíni, manty, žraloci velrybí, rybaření)","Quiet, relaxed, uncrowded island":"Klidný, pohodový ostrov bez davů","Authentic local island life and culture":"Autentický místní život a kultura","Farms and local produce":"Farmy a místní produkty","Easy access from Malé":"Snadná dostupnost z Malé","Recommended by friends/family":"Doporučení od přátel/rodiny","Saw it on social media/YouTube":"Viděl(a) jsem to na sociálních sítích/YouTube","Good reviews online":"Dobré recenze na internetu",
+"Before choosing Thoddoo, did you consider other local islands?":"Zvažovali jste před výběrem Thoddoo i jiné místní ostrovy?","Which islands did you consider?":"Které ostrovy jste zvažovali?","Optional.":"Nepovinné.",
+"How important was each of these when you chose Thoddoo?":"Jak důležité pro vás bylo každé z následujícího při výběru Thoddoo?","Natural beauty (beaches, water, greenery)":"Přírodní krása (pláže, voda, zeleň)","Marine activities and excursions":"Aktivity na moři a výlety","Value for money":"Poměr ceny a kvality","Peace and quiet":"Klid a ticho","Local culture and friendly people":"Místní kultura a přátelští lidé","Safety":"Bezpečnost","Food and cafés":"Jídlo a kavárny","Ease of getting there":"Snadná cesta na ostrov","Uncrowded, “undiscovered” feel":"Pocit „neobjeveného“ místa bez davů",
+"Not at all important":"Vůbec nedůležité","Extremely important":"Mimořádně důležité","Strongly disagree":"Rozhodně nesouhlasím","Strongly agree":"Rozhodně souhlasím",
+"Which words best describe how Thoddoo feels to you?":"Která slova nejlépe vystihují, jak na vás Thoddoo působí?","Relaxing":"Odpočinkové","Exciting":"Vzrušující","Authentic":"Autentické","Romantic":"Romantické","Peaceful":"Poklidné","Adventurous":"Dobrodružné","Friendly":"Přátelské","Budget-friendly":"Cenově dostupné","Unspoilt":"Nezkažené",
+"On this trip, I wanted to…":"Na této cestě jsem chtěl(a)…","…relax and escape daily routine":"…si odpočinout a uniknout každodenní rutině","…experience nature and the ocean":"…zažít přírodu a oceán","…have adventure and try new activities":"…zažít dobrodružství a vyzkoušet nové aktivity","…experience local Maldivian life":"…poznat místní maledivský život","…see the Maldives on a budget":"…poznat Maledivy levněji","…spend quality time with partner/family/friends":"…strávit čas s partnerem/rodinou/přáteli","…take great photos and content to share":"…pořídit skvělé fotky a obsah ke sdílení",
+"How important were these when you chose your accommodation?":"Jak důležité pro vás bylo následující při výběru ubytování?","Price per night":"Cena za noc","Online review score/ratings":"Hodnocení a recenze online","Location (close to beach)":"Poloha (blízko pláže)","Room quality and cleanliness":"Kvalita a čistota pokoje","Photos and look of the property":"Fotky a vzhled ubytování","On-site restaurant and food":"Restaurace a jídlo přímo v ubytování","Local Maldivian food and farm-fresh produce":"Místní maledivská kuchyně a čerstvé produkty z farem","Friendly, helpful hosts/staff":"Přátelští a ochotní hostitelé/personál","Excursions arranged by the property":"Výlety zajištěné ubytováním","Airport/speedboat transfer arranged":"Zajištěný transfer z letiště/rychlým člunem","Local experience offered by the property":"Místní zážitky nabízené ubytováním","Flexible cancellation":"Flexibilní storno podmínky","Wi-Fi and amenities (AC, hot water)":"Wi-Fi a vybavení (klimatizace, teplá voda)",
+"Which ONE factor mattered most in your final choice?":"Který JEDEN faktor byl při konečném výběru nejdůležitější?","How many properties did you seriously compare before booking?":"Kolik ubytování jste před rezervací vážně porovnávali?","More than 5":"Více než 5",
+"What was your nightly room budget on Thoddoo (USD)?":"Jaký byl váš rozpočet na pokoj na noc na Thoddoo (USD)?","Under $50":"Méně než $50",
+"Where did you find information when planning this trip?":"Kde jste hledali informace při plánování této cesty?","Pick all that apply.":"Vyberte vše, co platí.","Google search/Maps":"Vyhledávání Google/Mapy","Facebook/travel groups":"Facebook/cestovatelské skupiny","Travel blogs":"Cestovatelské blogy","Friends/family":"Přátelé/rodina","Travel agent":"Cestovní kancelář","Property's own website":"Vlastní web ubytování",
+"Which ONE source most influenced your choice of accommodation?":"Který JEDEN zdroj nejvíce ovlivnil váš výběr ubytování?","In a few words, what would make you choose one guesthouse on Thoddoo over another?":"Několika slovy: co by vás přimělo vybrat si jeden penzion na Thoddoo místo jiného?","What could a guesthouse on Thoddoo offer to make your stay more memorable?":"Co by mohl penzion na Thoddoo nabídnout, aby byl váš pobyt nezapomenutelnější?",
+"Your age":"Váš věk","Your gender":"Vaše pohlaví","Female":"Žena","Male":"Muž","Prefer to self-describe":"Popíšu sám/sama","Prefer not to say":"Nechci uvádět","Which country do you live in?":"V jaké zemi žijete?","Are you staying, or did you stay, at Belena Maldives?":"Bydlíte nebo jste bydleli v Belena Maldives?",
+"Question {n} of {m}":"Otázka {n} z {m}","{n} of {m} picked":"Vybráno {n} z {m}","Back":"Zpět","Next":"Další","Review and send":"Přejít k odeslání","Press Enter ↵":"Stiskněte Enter ↵","Type your answer":"Napište odpověď",
+"Preview: answers are not saved":"Náhled: odpovědi se neukládají","Why Thoddoo? Tell us about your stay.":"Proč Thoddoo? Řekněte nám o svém pobytu.",
+"I'm a Bachelor of Marketing student at The Maldives National University, working on a research project with a guesthouse on Thoddoo. This survey asks why you chose Thoddoo and how you chose where to stay.":"Studuji bakalářský obor marketing na Maledivské národní univerzitě a spolupracuji na výzkumu s penzionem na Thoddoo. Tento dotazník zjišťuje, proč jste si vybrali Thoddoo a jak jste vybírali ubytování.",
+"About 7 minutes":"Asi 7 minut","Anonymous":"Anonymní","Stop any time":"Můžete kdykoli skončit","Start over":"Začít znovu","Continue where I left off":"Pokračovat, kde jsem skončil(a)","Start the survey":"Začít dotazník",
+"Your answers are used only for this academic project and contain no names or contact details.":"Vaše odpovědi slouží pouze pro tento akademický projekt a neobsahují jména ani kontaktní údaje.",
+"Thank you for your time":"Děkujeme za váš čas","This survey is for visitors aged 18+ who have been to Thoddoo, so there are no more questions for you.":"Tento dotazník je pro návštěvníky od 18 let, kteří byli na Thoddoo, takže pro vás už nemáme další otázky.",
+"That's everything. Ready to send?":"To je vše. Odeslat odpovědi?","You can go back and change any answer before sending.":"Před odesláním se můžete vrátit a změnit jakoukoli odpověď.","Send my answers":"Odeslat odpovědi","Sending…":"Odesílám…",
+"Your answers didn't send. Check your internet connection and press Send again. Nothing you entered has been lost.":"Odpovědi se neodeslaly. Zkontrolujte připojení k internetu a klikněte znovu na Odeslat. Nic z toho, co jste vyplnili, se neztratilo.",
+"Thank you! Your answers are in.":"Děkujeme! Vaše odpovědi jsme přijali.","They'll help a small Maldivian business understand its visitors better. Enjoy the rest of your time on Thoddoo.":"Pomohou malé maledivské firmě lépe porozumět svým hostům. Užijte si zbytek pobytu na Thoddoo."
+}
+};
+const LANGS = ["en", "ru", "cs"];
+let lang = (() => {
+  const q = new URLSearchParams(location.search).get("lang");
+  if (LANGS.includes(q)) return q;
+  try { const s = localStorage.getItem("belena-survey-lang"); if (LANGS.includes(s)) return s; } catch (e) {}
+  const n = (navigator.language || "en").slice(0, 2).toLowerCase();
+  return LANGS.includes(n) ? n : "en";
+})();
+const t = (s, vars) => {
+  let out = (TR[lang] && TR[lang][s]) || s;
+  if (vars) for (const k in vars) out = out.replace(`{${k}}`, vars[k]);
+  return out;
+};
+
+/* ===== Questions (research/questionnaire-v2.md; design choices in questionnaire-design-rationale.md) =====
+   Types: transition (no answer), single, multi (checklist), rank (top N in order), scale (5-point rating), bipolar (7-point semantic differential), text. */
+const IMP = ["Not at all important", "Extremely important"];
+const AGR = ["Strongly disagree", "Strongly agree"];
+const PARAMS = new URLSearchParams(location.search);
+const SRC = PARAMS.get("src") || null;
+const F1_ITEMS = ["Booking.com/Agoda", "Airbnb", "Google search/Maps", "TripAdvisor", "Instagram", "TikTok", "YouTube", "Facebook/travel groups", "Travel blogs", "Friends/family", "Travel agent", "Property's own website", "Other"];
+const E1_ITEMS = ["Price per night", "Online review scores", "Location close to the beach", "Cleanliness", "Room comfort (bed, air conditioning, hot water)", "Photos of the property", "On-site restaurant", "Local Maldivian food", "Farm-fresh produce", "Friendly, helpful hosts", "Excursions arranged by the property", "Speedboat transfer arranged by the property", "Local experiences offered by the property", "Flexible cancellation", "Fast, reliable Wi-Fi"];
+
+// E2 pipes from E1: offer only the factors this person rated highest.
+function topRated(a) {
+  const r = a.E1 || {};
+  for (const min of [5, 4]) { const l = E1_ITEMS.filter(i => r[i] >= min); if (l.length >= 2) return l; }
+  return E1_ITEMS;
+}
+
+const Q = [
+  { id: "S1", section: "Before we start", type: "single", text: "Are you 18 or older, and happy to take part?", options: ["Yes, let's go", "No"], endIf: ["No"] },
+  { id: "S2", section: "Before we start", type: "single", text: "When did you last stay overnight on Thoddoo?", options: ["I'm staying there now", "Within the last 12 months", "1–2 years ago", "More than 2 years ago", "I have never stayed overnight on Thoddoo"], endIf: ["More than 2 years ago", "I have never stayed overnight on Thoddoo"] },
+
+  { id: "T1", section: "Your trip", type: "transition", text: "First, some quick facts about your trip", body: "If your stay has already ended, answer about your most recent stay on Thoddoo." },
+  { id: "A1", section: "Your trip", type: "single", text: "Is this your first visit to the Maldives?", options: ["Yes", "No"] },
+  { id: "A2", section: "Your trip", type: "single", text: "Is this your first visit to Thoddoo?", options: ["Yes", "No, I've been before"] },
+  { id: "A3", section: "Your trip", type: "single", text: "How many nights are you staying on Thoddoo?", options: ["1–2", "3–4", "5–7", "8 or more"] },
+  { id: "A4", section: "Your trip", type: "single", text: "Did you combine Thoddoo with other places on this trip?", options: ["Thoddoo only", "Other local islands", "A resort", "Both"] },
+  { id: "A5", section: "Your trip", type: "single", text: "Who are you travelling with?", options: ["Alone", "Partner/spouse", "Friends", "Family with children", "Family without children", "Organised group"] },
+
+  { id: "T2", section: "Why you travel", type: "transition", text: "Now, what you wanted from this trip", body: "There are no right or wrong answers. Go with your first reaction." },
+  { id: "D1", section: "Why you travel", type: "scale", anchors: AGR, shuffle: true, text: "On this trip, I wanted to…", items: ["…relax and unwind", "…get away from my daily routine", "…experience nature and the ocean", "…try adventurous activities", "…experience local Maldivian life", "…see the Maldives on a budget", "…spend quality time with the people I travelled with", "…take photos and videos to share online"], naItems: ["…spend quality time with the people I travelled with"] },
+
+  { id: "T3", section: "Why Thoddoo", type: "transition", text: "Next, why you picked Thoddoo", body: "What drew you to the island, and how it feels to you." },
+  { id: "B1", section: "Why Thoddoo", type: "rank", max: 3, shuffle: true, fixedLast: ["Other"], otherText: "Other", text: "What were your top 3 reasons for choosing Thoddoo?", hint: "Tap them in order. Your first tap is your number 1 reason.", options: ["More affordable than a resort", "Beaches and bikini beach", "Snorkelling, diving and marine life", "Excursions (sandbank, dolphins, mantas, whale sharks, fishing)", "Quiet, relaxed, uncrowded island", "Authentic local island life and culture", "Farms and local produce", "Easy access from Malé", "Recommended by friends/family", "Saw it on social media/YouTube", "Good reviews online", "Other"] },
+  { id: "B2", section: "Why Thoddoo", type: "single", text: "Before choosing Thoddoo, did you consider other local islands?", options: ["Yes", "No"] },
+  { id: "B2_which", section: "Why Thoddoo", type: "text", optional: true, showIf: a => a.B2 === "Yes", text: "Which islands did you consider?", hint: "Optional." },
+  { id: "C1", section: "Why Thoddoo", type: "scale", anchors: IMP, shuffle: true, text: "How important was each of these when you chose Thoddoo?", items: ["Natural beauty (beaches, water, greenery)", "Snorkelling and diving", "Boat excursions (sandbank, dolphins, mantas)", "Value for money", "Peace and quiet", "Local culture", "Friendly local people", "Safety", "Food and places to eat", "Farms and fresh local produce", "Ease of getting there", "Uncrowded, “undiscovered” feel"] },
+  { id: "C2", section: "Why Thoddoo", type: "bipolar", text: "How does Thoddoo feel to you?", hint: "For each pair, tap the point closest to how you feel. The middle means neither.", pairs: [["Unpleasant", "Pleasant"], ["Stressful", "Relaxing"], ["Boring", "Exciting"], ["Touristy", "Authentic"], ["Crowded", "Uncrowded"], ["Unfriendly", "Friendly"], ["Expensive", "Affordable"], ["Ordinary", "Unique"]] },
+
+  { id: "T4", section: "Where you stay", type: "transition", text: "Now, how you chose where to stay", body: "A few questions about booking and what mattered to you." },
+  { id: "A6", section: "Where you stay", type: "single", text: "Where are you staying on Thoddoo?", options: ["Guesthouse", "Hotel/boutique hotel", "Private rental/Airbnb", "Other"] },
+  { id: "A7", section: "Where you stay", type: "single", text: "How did you book your accommodation?", options: ["Booking.com", "Airbnb", "Agoda/Expedia", "Directly with the property", "Travel agent/tour operator", "Other"] },
+  { id: "A8", section: "Where you stay", type: "single", text: "How far in advance did you book?", options: ["Less than 1 week", "1–4 weeks", "1–3 months", "More than 3 months"] },
+  { id: "E1", section: "Where you stay", type: "scale", anchors: IMP, shuffle: true, text: "How important were these when you chose your accommodation?", items: E1_ITEMS },
+  { id: "E2", section: "Where you stay", type: "single", text: "Of these, which ONE mattered most in your final choice?", hint: "These are the things you rated most important.", options: topRated },
+  { id: "E3", section: "Where you stay", type: "single", text: "How many properties did you seriously compare before booking?", options: ["1", "2–3", "4–5", "More than 5"] },
+  { id: "F1", section: "Where you stay", type: "multi", shuffle: true, fixedLast: ["Other"], otherText: "Other", text: "Where did you find information when planning this trip?", hint: "Pick all that apply.", options: F1_ITEMS },
+  { id: "F2", section: "Where you stay", type: "single", text: "Which ONE source most influenced your choice of accommodation?", options: a => (a.F1 && a.F1.length > 1 ? a.F1 : F1_ITEMS), showIf: a => !(a.F1 && a.F1.length === 1) },
+
+  { id: "T5", section: "Your ideas", type: "transition", text: "Two open questions", body: "Write as much or as little as you like. Your own words help most here." },
+  { id: "F3", section: "Your ideas", type: "text", long: true, text: "In a few words, what would make you choose one guesthouse on Thoddoo over another?" },
+  { id: "F4", section: "Your ideas", type: "text", long: true, optional: true, text: "What could a guesthouse on Thoddoo offer to make your stay more memorable?", hint: "Optional." },
+
+  { id: "T6", section: "About you", type: "transition", text: "Last section: about you", body: "These questions let us group answers, for example by age or country. They stay anonymous." },
+  { id: "E4", section: "About you", type: "single", text: "What was your nightly room budget on Thoddoo (USD)?", options: ["Under $50", "$50–79", "$80–119", "$120–159", "$160+", "I didn't have a set budget"] },
+  { id: "G1", section: "About you", type: "single", text: "Your age", options: ["18–24", "25–34", "35–44", "45–54", "55–64", "65+"] },
+  { id: "G2", section: "About you", type: "single", otherText: "Prefer to self-describe", text: "Your gender", options: ["Female", "Male", "Prefer to self-describe", "Prefer not to say"] },
+  { id: "G3", section: "About you", type: "text", text: "Which country do you live in?", list: true },
+  { id: "G4", section: "About you", type: "text", list: "guesthouses", skipChip: "Prefer not to say", text: "Which guesthouse or hotel on Thoddoo are you staying at (or did you stay at)?", hint: "Start typing and pick the name, or write it in if it isn't listed." },
+  { id: "P1", section: "Pilot test", type: "text", long: true, optional: true, showIf: () => SRC === "pilot", text: "Pilot test: was any question confusing, or was an answer you wanted missing? Tell us which one.", hint: "Optional. This question only appears in the pilot version." },
+];
+
+// Thoddoo properties for G4 suggestions (from resortlife.travel, Oct 2026). Add any missing ones from Booking.com.
+const GUESTHOUSES = ["Belena Maldives","Belvedere Thoddoo","Brisa Fresca","Dhonkamana Stay","Hakuna Maldives","Ithaa Thoddoo Inn","Kin'bi Inn","Lunara Residence","Oak Thoddoo","Ocean Vida Maldivas","One Season Thoddoo","Relax Villa","The Palms Thoddoo","Thoddoo Haisha Inn","Thoddoo Inn","Thoddoo Island Holiday Inn","Thoddoo Island Life"].sort();
+const COUNTRIES = ["Italy","Germany","United Kingdom","Russia","China","India","France","Poland","United States","Spain","Switzerland","Netherlands","Austria","Czech Republic","Sweden","Belgium","Ukraine","Kazakhstan","Israel","Australia","Canada","Japan","South Korea","Saudi Arabia","United Arab Emirates","Maldives","Sri Lanka","Other"];
+
+/* ===== Translations for v2 wording (merged into TR above) ===== */
+Object.assign(TR.ru, {
+"Thoddoo Visitor Study":"Исследование гостей Тодду","Which guesthouse or hotel on Thoddoo are you staying at (or did you stay at)?":"В каком гестхаусе или отеле на Тодду вы живёте (или жили)?","Start typing and pick the name, or write it in if it isn't listed.":"Начните вводить и выберите название или впишите его, если его нет в списке.","They'll help guesthouses on Thoddoo understand their visitors better. Enjoy the rest of your time on the island.":"Они помогут гестхаусам на Тодду лучше понять своих гостей. Хорошего отдыха на острове!",
+"When did you last stay overnight on Thoddoo?":"Когда вы в последний раз ночевали на Тодду?","I'm staying there now":"Я живу там сейчас","Within the last 12 months":"В последние 12 месяцев","1–2 years ago":"1–2 года назад","More than 2 years ago":"Больше 2 лет назад","I have never stayed overnight on Thoddoo":"Я никогда не ночевал(а) на Тодду",
+"This survey is for visitors aged 18+ who have stayed on Thoddoo in the last two years, so there are no more questions for you.":"Этот опрос для гостей от 18 лет, которые ночевали на Тодду за последние два года, поэтому больше вопросов для вас нет.",
+"Why you travel":"Цель поездки","Where you stay":"Где вы живёте","Your ideas":"Ваши идеи","Pilot test":"Пробный тест",
+"First, some quick facts about your trip":"Сначала несколько коротких вопросов о поездке","If your stay has already ended, answer about your most recent stay on Thoddoo.":"Если ваш отдых уже закончился, отвечайте о последнем пребывании на Тодду.",
+"Now, what you wanted from this trip":"Теперь о том, чего вы ждали от поездки","There are no right or wrong answers. Go with your first reaction.":"Правильных и неправильных ответов нет. Отвечайте так, как приходит в голову сразу.",
+"…relax and unwind":"…отдохнуть и расслабиться","…get away from my daily routine":"…отвлечься от повседневной рутины","…try adventurous activities":"…попробовать приключенческие занятия","…spend quality time with the people I travelled with":"…провести время с теми, с кем я путешествую","…take photos and videos to share online":"…снять фото и видео, чтобы поделиться в интернете",
+"Doesn't apply":"Не относится ко мне",
+"Next, why you picked Thoddoo":"Далее: почему вы выбрали Тодду","What drew you to the island, and how it feels to you.":"Что привлекло вас на остров и какие у вас от него ощущения.",
+"What were your top 3 reasons for choosing Thoddoo?":"Назовите 3 главные причины, по которым вы выбрали Тодду","Tap them in order. Your first tap is your number 1 reason.":"Нажимайте по порядку. Первое нажатие — причина номер 1.",
+"Snorkelling and diving":"Снорклинг и дайвинг","Boat excursions (sandbank, dolphins, mantas)":"Морские экскурсии (песчаная коса, дельфины, манты)","Local culture":"Местная культура","Friendly local people":"Дружелюбные местные жители","Food and places to eat":"Еда и где поесть","Farms and fresh local produce":"Фермы и свежие местные продукты",
+"How does Thoddoo feel to you?":"Какие ощущения у вас от Тодду?","For each pair, tap the point closest to how you feel. The middle means neither.":"Для каждой пары нажмите точку, ближе всего к вашим ощущениям. Середина означает «ни то, ни другое».",
+"Unpleasant":"Неприятный","Pleasant":"Приятный","Stressful":"Напряжённый","Boring":"Скучный","Touristy":"Туристический","Crowded":"Многолюдный","Uncrowded":"Немноголюдный","Unfriendly":"Недружелюбный","Expensive":"Дорогой","Affordable":"Доступный по цене","Ordinary":"Обычный","Unique":"Уникальный",
+"Now, how you chose where to stay":"Теперь о том, как вы выбирали жильё","A few questions about booking and what mattered to you.":"Несколько вопросов о бронировании и о том, что было для вас важно.",
+"Online review scores":"Оценки в отзывах","Location close to the beach":"Близость к пляжу","Cleanliness":"Чистота","Room comfort (bed, air conditioning, hot water)":"Комфорт номера (кровать, кондиционер, горячая вода)","Photos of the property":"Фотографии отеля","On-site restaurant":"Ресторан при отеле","Local Maldivian food":"Местная мальдивская кухня","Farm-fresh produce":"Свежие фермерские продукты","Friendly, helpful hosts":"Дружелюбные, отзывчивые хозяева","Speedboat transfer arranged by the property":"Трансфер на скоростном катере от отеля","Local experiences offered by the property":"Местные впечатления, которые предлагает отель","Fast, reliable Wi-Fi":"Быстрый и стабильный Wi-Fi",
+"Of these, which ONE mattered most in your final choice?":"Что из этого было САМЫМ важным в вашем окончательном выборе?","These are the things you rated most important.":"Это то, что вы оценили как самое важное.",
+"Two open questions":"Два открытых вопроса","Write as much or as little as you like. Your own words help most here.":"Пишите сколько хотите. Здесь особенно ценны ваши собственные слова.",
+"Last section: about you":"Последний раздел: о вас","These questions let us group answers, for example by age or country. They stay anonymous.":"Эти вопросы помогают группировать ответы, например по возрасту или стране. Они остаются анонимными.",
+"I didn't have a set budget":"У меня не было определённого бюджета",
+"Pilot test: was any question confusing, or was an answer you wanted missing? Tell us which one.":"Пробный тест: был ли какой-то вопрос непонятным или не хватало нужного варианта ответа? Напишите, какой именно.","Optional. This question only appears in the pilot version.":"Необязательно. Этот вопрос есть только в пробной версии.",
+"Please tell us more":"Уточните, пожалуйста","Continue":"Продолжить","{n} of {m} ranked":"Выбрано {n} из {m}","Tap again to remove.":"Нажмите ещё раз, чтобы убрать."
+});
+Object.assign(TR.cs, {
+"Thoddoo Visitor Study":"Studie návštěvníků Thoddoo","Which guesthouse or hotel on Thoddoo are you staying at (or did you stay at)?":"Ve kterém penzionu nebo hotelu na Thoddoo bydlíte (nebo jste bydleli)?","Start typing and pick the name, or write it in if it isn't listed.":"Začněte psát a vyberte název, nebo ho napište, pokud v seznamu není.","They'll help guesthouses on Thoddoo understand their visitors better. Enjoy the rest of your time on the island.":"Pomohou penzionům na Thoddoo lépe porozumět svým hostům. Užijte si zbytek pobytu na ostrově.",
+"When did you last stay overnight on Thoddoo?":"Kdy jste naposledy přenocovali na Thoddoo?","I'm staying there now":"Jsem tam právě teď","Within the last 12 months":"V posledních 12 měsících","1–2 years ago":"Před 1–2 lety","More than 2 years ago":"Před více než 2 lety","I have never stayed overnight on Thoddoo":"Na Thoddoo jsem nikdy nepřenocoval(a)",
+"This survey is for visitors aged 18+ who have stayed on Thoddoo in the last two years, so there are no more questions for you.":"Tento dotazník je pro návštěvníky od 18 let, kteří na Thoddoo přenocovali v posledních dvou letech, takže pro vás už nemáme další otázky.",
+"Why you travel":"Proč cestujete","Where you stay":"Kde bydlíte","Your ideas":"Vaše nápady","Pilot test":"Pilotní test",
+"First, some quick facts about your trip":"Nejdřív pár rychlých otázek o vaší cestě","If your stay has already ended, answer about your most recent stay on Thoddoo.":"Pokud váš pobyt už skončil, odpovídejte o svém posledním pobytu na Thoddoo.",
+"Now, what you wanted from this trip":"Teď o tom, co jste od cesty chtěli","There are no right or wrong answers. Go with your first reaction.":"Neexistují správné ani špatné odpovědi. Řiďte se první reakcí.",
+"…relax and unwind":"…si odpočinout a uvolnit se","…get away from my daily routine":"…uniknout každodenní rutině","…try adventurous activities":"…vyzkoušet dobrodružné aktivity","…spend quality time with the people I travelled with":"…strávit čas s lidmi, se kterými cestuji","…take photos and videos to share online":"…natočit fotky a videa ke sdílení online",
+"Doesn't apply":"Netýká se mě",
+"Next, why you picked Thoddoo":"Dále: proč jste si vybrali Thoddoo","What drew you to the island, and how it feels to you.":"Co vás na ostrov přilákalo a jak na vás působí.",
+"What were your top 3 reasons for choosing Thoddoo?":"Jaké byly 3 hlavní důvody, proč jste si vybrali Thoddoo?","Tap them in order. Your first tap is your number 1 reason.":"Klepejte v pořadí. První klepnutí je váš důvod číslo 1.",
+"Snorkelling and diving":"Šnorchlování a potápění","Boat excursions (sandbank, dolphins, mantas)":"Výlety lodí (písečný ostrůvek, delfíni, manty)","Local culture":"Místní kultura","Friendly local people":"Přátelští místní lidé","Food and places to eat":"Jídlo a kde se najíst","Farms and fresh local produce":"Farmy a čerstvé místní produkty",
+"How does Thoddoo feel to you?":"Jak na vás Thoddoo působí?","For each pair, tap the point closest to how you feel. The middle means neither.":"U každé dvojice klepněte na bod, který nejvíc odpovídá vašemu pocitu. Prostředek znamená ani jedno.",
+"Unpleasant":"Nepříjemné","Pleasant":"Příjemné","Stressful":"Stresující","Boring":"Nudné","Touristy":"Turistické","Crowded":"Přeplněné","Uncrowded":"Bez davů","Unfriendly":"Nepřátelské","Expensive":"Drahé","Affordable":"Cenově dostupné","Ordinary":"Obyčejné","Unique":"Jedinečné",
+"Now, how you chose where to stay":"Teď o tom, jak jste vybírali ubytování","A few questions about booking and what mattered to you.":"Pár otázek o rezervaci a o tom, co pro vás bylo důležité.",
+"Online review scores":"Hodnocení v recenzích","Location close to the beach":"Poloha blízko pláže","Cleanliness":"Čistota","Room comfort (bed, air conditioning, hot water)":"Pohodlí pokoje (postel, klimatizace, teplá voda)","Photos of the property":"Fotky ubytování","On-site restaurant":"Restaurace v ubytování","Local Maldivian food":"Místní maledivská kuchyně","Farm-fresh produce":"Čerstvé produkty z farem","Friendly, helpful hosts":"Přátelští, ochotní hostitelé","Speedboat transfer arranged by the property":"Transfer rychlým člunem zajištěný ubytováním","Local experiences offered by the property":"Místní zážitky nabízené ubytováním","Fast, reliable Wi-Fi":"Rychlá a spolehlivá Wi-Fi",
+"Of these, which ONE mattered most in your final choice?":"Která JEDNA z těchto věcí byla při konečném výběru nejdůležitější?","These are the things you rated most important.":"Toto jsou věci, které jste ohodnotili jako nejdůležitější.",
+"Two open questions":"Dvě otevřené otázky","Write as much or as little as you like. Your own words help most here.":"Napište, kolik chcete. Vaše vlastní slova tu pomohou nejvíc.",
+"Last section: about you":"Poslední část: o vás","These questions let us group answers, for example by age or country. They stay anonymous.":"Tyto otázky pomáhají třídit odpovědi, například podle věku nebo země. Zůstávají anonymní.",
+"I didn't have a set budget":"Neměl(a) jsem pevný rozpočet",
+"Pilot test: was any question confusing, or was an answer you wanted missing? Tell us which one.":"Pilotní test: byla některá otázka nejasná, nebo vám chyběla odpověď? Napište, která.","Optional. This question only appears in the pilot version.":"Nepovinné. Tato otázka je jen v pilotní verzi.",
+"Please tell us more":"Upřesněte prosím","Continue":"Pokračovat","{n} of {m} ranked":"Seřazeno {n} z {m}","Tap again to remove.":"Klepnutím znovu odeberete."
+});
+
+/* ===== State ===== */
+const app = document.getElementById("app");
+const bar = document.getElementById("bar");
+const tag = document.getElementById("sectionTag");
+const STORE = "belena-survey-draft-v2";
+const fresh = () => ({ step: -1, answers: {}, order: {}, startedAt: null });
+let state = fresh();
+try { const s = JSON.parse(localStorage.getItem(STORE) || "null"); if (s && s.answers) state = { ...fresh(), ...s }; } catch (e) {}
+const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} };
+const clearDraft = () => { try { localStorage.removeItem(STORE); } catch (e) {} };
+const visible = () => Q.filter(q => !q.showIf || q.showIf(state.answers));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const KEYS = "123456789ABCDEFGHIJ";
+
+// Randomise unordered lists once per respondent (order bias), keeping "Other" last.
+function ordered(q, list) {
+  if (!q.shuffle) return list;
+  const key = q.id;
+  if (!state.order[key] || state.order[key].length !== list.length) {
+    const fixed = q.fixedLast || [];
+    const move = list.filter(x => !fixed.includes(x));
+    for (let i = move.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [move[i], move[j]] = [move[j], move[i]]; }
+    state.order[key] = [...move, ...list.filter(x => fixed.includes(x))];
+    save();
+  }
+  return state.order[key];
+}
+const opts = q => ordered(q, typeof q.options === "function" ? q.options(state.answers) : q.options);
+const rows = q => ordered(q, q.items);
+const otherKey = q => q.id + "_other";
+function otherChosen(q) { const v = state.answers[q.id]; return q.otherText && (Array.isArray(v) ? v.includes(q.otherText) : v === q.otherText); }
+
+function answered(q) {
+  const v = state.answers[q.id];
+  if (q.type === "transition" || q.optional) return true;
+  if (otherChosen(q) && !(state.answers[otherKey(q)] || "").trim()) return false;
+  if (q.type === "scale") return v && q.items.every(it => v[it] != null);
+  if (q.type === "bipolar") return v && q.pairs.every(p => v[p.join("–")] != null);
+  if (q.type === "rank") return Array.isArray(v) && v.length === Math.min(q.max, q.options.length);
+  if (q.type === "multi") return Array.isArray(v) && v.length > 0;
+  if (q.type === "text") return typeof v === "string" && v.trim().length > 0;
+  return v != null;
+}
+
+function render() {
+  const list = visible();
+  if (state.step < 0) return renderWelcome();
+  if (state.step >= list.length) return renderSubmit();
+  const q = list[state.step];
+  const qs = list.filter(x => x.type !== "transition");
+  bar.style.width = Math.round((state.step / list.length) * 100) + "%";
+  tag.textContent = t(q.section);
+  const nav = last => `
+      <div class="nav">
+        <button type="button" class="btn btn-ghost" id="back">${t("Back")}</button>
+        <span class="enter-hint">${t("Press Enter ↵")}</span>
+        <button type="button" class="btn btn-primary" id="next" ${answered(q) ? "" : "disabled"}>${t(last ? "Review and send" : (q.type === "transition" ? "Continue" : "Next"))}</button>
+      </div>`;
+  if (q.type === "transition") {
+    app.innerHTML = `<section class="card transition"><h1>${esc(t(q.text))}</h1><p>${esc(t(q.body))}</p>${nav(false)}</section>`;
+    return wire(q);
+  }
+  const v = state.answers[q.id];
+  let body = "";
+  if (q.type === "single" || q.type === "multi" || q.type === "rank") {
+    const o = opts(q);
+    body = `<div class="opts ${o.length > 6 ? "two" : ""}" role="group">` + o.map((opt, i) => {
+      const rank = q.type === "rank" ? (v || []).indexOf(opt) + 1 : 0;
+      const on = q.type === "single" ? v === opt : (v || []).includes(opt);
+      const key = q.type === "rank" ? (rank || "") : (KEYS[i] || "");
+      return `<button type="button" class="opt ${q.type === "rank" ? "rank" : ""}" data-i="${i}" aria-pressed="${on}"><span class="key">${key}</span><span>${esc(t(opt))}</span></button>`;
+    }).join("") + `</div>`;
+    if (q.otherText) body += `<input id="f-other" type="text" placeholder="${t("Please tell us more")}" value="${esc(state.answers[otherKey(q)] || "")}" ${otherChosen(q) ? "" : "hidden"}>`;
+  } else if (q.type === "scale") {
+    body = `<div class="scale-list">` + rows(q).map((it, r) => `
+      <div class="scale-row" data-item="${esc(it)}">
+        <div class="scale-label">${esc(t(it))}</div>
+        <div class="pips ${q.naItems && q.naItems.includes(it) ? "with-na" : ""}">${[1,2,3,4,5].map(n => `<button type="button" class="pip" data-n="${n}" aria-label="${esc(t(it))}: ${n}" aria-pressed="${v && v[it] === n}">${n}</button>`).join("")}${q.naItems && q.naItems.includes(it) ? `<button type="button" class="pip na" data-n="NA" aria-pressed="${v && v[it] === "NA"}">${t("Doesn't apply")}</button>` : ""}</div>
+        <div class="anchors"><span>1 = ${t(q.anchors[0])}</span><span>5 = ${t(q.anchors[1])}</span></div>
+      </div>`).join("") + `</div>`;
+  } else if (q.type === "bipolar") {
+    body = `<div class="scale-list">` + q.pairs.map(p => { const k = p.join("–"); return `
+      <div class="scale-row bipolar" data-item="${esc(k)}">
+        <div class="poles"><span>${esc(t(p[0]))}</span><span>${esc(t(p[1]))}</span></div>
+        <div class="pips seven">${[1,2,3,4,5,6,7].map(n => `<button type="button" class="pip dot" data-n="${n}" aria-label="${esc(t(p[0]))} – ${esc(t(p[1]))}: ${n}" aria-pressed="${v && v[k] === n}"><i></i></button>`).join("")}</div>
+      </div>`; }).join("") + `</div>`;
+  } else if (q.type === "text") {
+    const val = esc(v && v !== q.skipChip ? v : "");
+    body = q.long
+      ? `<textarea id="f-${q.id}" placeholder="${t("Type your answer")}">${val}</textarea>`
+      : `<input id="f-${q.id}" type="text" value="${val}" placeholder="${t("Type your answer")}" ${q.list ? `list="dl-${q.list}" autocomplete="${q.list === "countries" ? "country-name" : "off"}"` : ""}>`
+        + (q.list ? `<datalist id="dl-${q.list}">${(q.list === "countries" ? COUNTRIES : GUESTHOUSES).map(c => `<option value="${esc(c)}">`).join("")}</datalist>` : "")
+        + (q.skipChip ? `<button type="button" class="btn btn-ghost chip" id="skipChip" aria-pressed="${v === q.skipChip}">${t(q.skipChip)}</button>` : "");
+  }
+  const note = q.type === "rank" ? `<p class="hint" id="multiNote">${t("{n} of {m} ranked", { n: (v || []).length, m: q.max })}. ${t("Tap again to remove.")}</p>`
+    : q.type === "multi" && q.max ? `<p class="hint" id="multiNote">${t("{n} of {m} picked", { n: (v || []).length, m: q.max })}</p>` : "";
+  app.innerHTML = `
+    <section class="card">
+      <span class="qnum">${t("Question {n} of {m}", { n: qs.indexOf(q) + 1, m: qs.length })}</span>
+      <h2>${esc(t(q.text))}</h2>
+      ${q.hint ? `<p class="hint">${esc(t(q.hint))}</p>` : ""}
+      ${body}
+      ${note}
+      ${nav(state.step === list.length - 1)}
+    </section>`;
+  wire(q);
+}
+
+function wire(q) {
+  const next = document.getElementById("next");
+  const refresh = () => { next.disabled = !answered(q); save(); };
+  document.getElementById("back").onclick = () => { state.step--; save(); render(); };
+  next.onclick = advance;
+  if (q.type === "transition") return;
+  const other = document.getElementById("f-other");
+  const showOther = () => { if (!other) return; other.hidden = !otherChosen(q); if (!other.hidden) other.focus({ preventScroll: true }); };
+  if (other) other.oninput = () => { state.answers[otherKey(q)] = other.value; refresh(); };
+  if (q.type === "single" || q.type === "multi" || q.type === "rank") {
+    const o = opts(q);
+    app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      const opt = o[+b.dataset.i];
+      if (q.type === "single") {
+        state.answers[q.id] = opt; save();
+        app.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b));
+        if (q.endIf && q.endIf.includes(opt)) return renderEnd();
+        if (otherChosen(q)) { showOther(); return refresh(); }
+        if (other) other.hidden = true;
+        refresh();
+        setTimeout(advance, 260);
+      } else {
+        let cur = state.answers[q.id] || [];
+        if (cur.includes(opt)) cur = cur.filter(x => x !== opt);
+        else if (!q.max || cur.length < q.max) cur = [...cur, opt];
+        state.answers[q.id] = cur;
+        app.querySelectorAll(".opt").forEach(x => {
+          const val = o[+x.dataset.i];
+          x.setAttribute("aria-pressed", cur.includes(val));
+          if (q.type === "rank") x.querySelector(".key").textContent = cur.indexOf(val) + 1 || "";
+        });
+        const n = document.getElementById("multiNote");
+        if (n) n.textContent = q.type === "rank" ? `${t("{n} of {m} ranked", { n: cur.length, m: q.max })}. ${t("Tap again to remove.")}` : t("{n} of {m} picked", { n: cur.length, m: q.max });
+        showOther(); refresh();
+      }
+    });
+  } else if (q.type === "scale" || q.type === "bipolar") {
+    app.querySelectorAll(".scale-row").forEach(row => {
+      const it = row.dataset.item;
+      row.querySelectorAll(".pip").forEach(p => p.onclick = () => {
+        const val = p.dataset.n === "NA" ? "NA" : +p.dataset.n;
+        state.answers[q.id] = { ...(state.answers[q.id] || {}), [it]: val };
+        row.querySelectorAll(".pip").forEach(x => x.setAttribute("aria-pressed", x === p));
+        refresh();
+        const nextRow = row.nextElementSibling;
+        if (nextRow && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) nextRow.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  } else {
+    const f = document.getElementById("f-" + q.id);
+    f.oninput = () => { state.answers[q.id] = f.value; refresh(); };
+    f.focus({ preventScroll: true });
+    const chip = document.getElementById("skipChip");
+    if (chip) chip.onclick = () => { state.answers[q.id] = q.skipChip; f.value = ""; refresh(); advance(); };
+  }
+}
+
+function advance() {
+  const list = visible(), q = list[state.step];
+  if (q && !answered(q)) return;
+  state.step++; save(); render(); window.scrollTo({ top: 0 });
+}
+
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "TEXTAREA") return;
+  const list = visible(), q = list[state.step];
+  if (e.key === "Enter") { const n = document.getElementById("next") || document.getElementById("start"); if (n && !n.disabled) { e.preventDefault(); n.click(); } return; }
+  if (!q || e.target.tagName === "INPUT" || (q.type !== "single" && q.type !== "multi")) return;
+  const i = KEYS.indexOf(e.key.toUpperCase());
+  const b = i >= 0 && app.querySelector(`.opt[data-i="${i}"]`);
+  if (b) b.click();
+});
+
+function renderWelcome() {
+  bar.style.width = "0%"; tag.textContent = "";
+  const resumable = Object.keys(state.answers).length > 0;
+  app.innerHTML = `
+    <section class="card">
+      ${!SUPABASE_URL ? `<span class="preview-flag" style="align-self:flex-start">${t("Preview: answers are not saved")}</span>` : ""}
+      <h1>${t("Why Thoddoo? Tell us about your stay.")}</h1>
+      <p>${t("I'm a Bachelor of Marketing student at The Maldives National University, working on a research project with a guesthouse on Thoddoo. This survey asks why you chose Thoddoo and how you chose where to stay.")}</p>
+      <div class="meta-row"><span>${t("About 7 minutes")}</span><span>${t("Anonymous")}</span><span>${t("Stop any time")}</span></div>
+      <div class="nav">
+        ${resumable ? `<button type="button" class="btn btn-ghost" id="restart">${t("Start over")}</button>` : "<span></span>"}
+        <button type="button" class="btn btn-primary" id="start">${t(resumable ? "Continue where I left off" : "Start the survey")}</button>
+      </div>
+      <p class="notice">${t("Your answers are used only for this academic project and contain no names or contact details.")}</p>
+    </section>`;
+  document.getElementById("start").onclick = () => { if (!state.startedAt) state.startedAt = Date.now(); if (state.step < 0) state.step = 0; save(); render(); };
+  const r = document.getElementById("restart"); if (r) r.onclick = () => { state = { ...fresh(), step: 0, startedAt: Date.now() }; save(); render(); };
+}
+
+function renderEnd() {
+  bar.style.width = "100%"; tag.textContent = "";
+  clearDraft(); state = fresh();
+  app.innerHTML = `<section class="card"><h2>${t("Thank you for your time")}</h2><p>${t("This survey is for visitors aged 18+ who have stayed on Thoddoo in the last two years, so there are no more questions for you.")}</p></section>`;
+}
+
+function renderSubmit() {
+  bar.style.width = "100%"; tag.textContent = t("Almost done");
+  app.innerHTML = `
+    <section class="card">
+      <h2>${t("That's everything. Ready to send?")}</h2>
+      <p>${t("You can go back and change any answer before sending.")}</p>
+      <p id="err" class="error" hidden></p>
+      <div class="nav">
+        <button type="button" class="btn btn-ghost" id="back">${t("Back")}</button>
+        <button type="button" class="btn btn-primary" id="send">${t("Send my answers")}</button>
+      </div>
+    </section>`;
+  document.getElementById("back").onclick = () => { state.step--; save(); render(); };
+  document.getElementById("send").onclick = submit;
+}
+
+async function submit() {
+  const btn = document.getElementById("send"), err = document.getElementById("err");
+  btn.disabled = true; btn.textContent = t("Sending…"); err.hidden = true;
+  const shown = visible().filter(q => q.type !== "transition");
+  const keep = new Set(shown.flatMap(q => (otherChosen(q) ? [q.id, otherKey(q)] : [q.id])));
+  const answers = Object.fromEntries(Object.entries(state.answers).filter(([k]) => keep.has(k)));
+  // Administrative data is captured automatically, so respondents are never asked for it.
+  const row = {
+    survey_version: SURVEY_VERSION,
+    language: lang,
+    answers,
+    duration_seconds: state.startedAt ? Math.round((Date.now() - state.startedAt) / 1000) : null,
+    source: SRC,
+  };
+  try {
+    if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/responses`, {
+        method: "POST",
+        headers: { apikey: SUPABASE_ANON_KEY, ...(SUPABASE_ANON_KEY.startsWith("eyJ") ? { Authorization: `Bearer ${SUPABASE_ANON_KEY}` } : {}), "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify(row),
+      });
+      if (!res.ok) throw new Error(res.status);
+    } else {
+      console.log("Preview mode, not saved:", JSON.stringify(row));
+    }
+    clearDraft();
+    state = fresh();
+    renderThanks();
+  } catch (e) {
+    err.textContent = t("Your answers didn't send. Check your internet connection and press Send again. Nothing you entered has been lost.");
+    err.hidden = false; btn.disabled = false; btn.textContent = t("Send my answers");
+  }
+}
+
+function renderThanks() {
+  bar.style.width = "100%"; tag.textContent = "";
+  app.innerHTML = `
+    <section class="card">
+      <div class="done-mark"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2>${t("Thank you! Your answers are in.")}</h2>
+      <p>${t("They'll help guesthouses on Thoddoo understand their visitors better. Enjoy the rest of your time on the island.")}</p>
+    </section>`;
+}
+
+function setLang(l) {
+  lang = l;
+  try { localStorage.setItem("belena-survey-lang", l); } catch (e) {}
+  document.documentElement.lang = l;
+  const bn = document.getElementById("brandName"); if (bn) bn.textContent = t("Thoddoo Visitor Study");
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === l));
+}
+document.querySelectorAll(".lang button").forEach(b => b.onclick = () => { setLang(b.dataset.lang); render(); });
+setLang(lang);
+render();
+</script>
+
+</body>
+</html>
