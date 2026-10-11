@@ -296,7 +296,7 @@ const Q = [
   { id: "E4", section: "About you", type: "single", text: "What was your nightly room budget on Thoddoo (USD)?", options: ["Under $50", "$50–79", "$80–119", "$120–159", "$160+", "I didn't have a set budget"] },
   { id: "G1", section: "About you", type: "single", text: "Your age", options: ["18–24", "25–34", "35–44", "45–54", "55–64", "65+"] },
   { id: "G2", section: "About you", type: "single", otherText: "Prefer to self-describe", text: "Your gender", options: ["Female", "Male", "Prefer to self-describe", "Prefer not to say"] },
-  { id: "G3", section: "About you", type: "text", text: "Which country do you live in?", list: true },
+  { id: "G3", section: "About you", type: "text", text: "Which country do you live in?", list: "countries" },
   { id: "G4", section: "About you", type: "text", list: "guesthouses", skipChip: "Prefer not to say", text: "Which guesthouse or hotel on Thoddoo are you staying at (or did you stay at)?", hint: "Start typing and pick the name, or write it in if it isn't listed." },
   { id: "P1", section: "Pilot test", type: "text", long: true, optional: true, showIf: () => SRC === "pilot", text: "Pilot test: was any question confusing, or was an answer you wanted missing? Tell us which one.", hint: "Optional. This question only appears in the pilot version." },
 ];
